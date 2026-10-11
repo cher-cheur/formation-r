@@ -5,34 +5,50 @@
 # Fil rouge : indices de position sociale (IPS) des collèges, 2020-2021.
 # Plus l'IPS est élevé, plus le profil social des élèves est favorisé
 # (la moyenne nationale est proche de 100).
+#
+# Chaque exercice commence par l'exemple vu en cours : exécutez-le,
+# puis adaptez-le pour répondre aux questions « À vous ».
 # ---------------------------------------------------------------------
 
 
 # --- Exercice 1 : calculs --------------------------------------------
-# Calculer 17 divisé par 5, puis le quotient entier (%/%) et le reste (%%).
+# Exemple du cours : exécutez-le.
+17 / 5
+17 %/% 5
+17 %% 5
+sqrt(144)
+round(pi, 2)
+
+# À vous : 128 élèves de 6e se répartissent en groupes de 5.
+# Combien de groupes complets ? Combien d'élèves restent sans groupe ?
 # À COMPLÉTER
 
-# Calculer la racine carrée de 144 (sqrt) et arrondir pi à 2 décimales (round).
+# À vous : afficher la racine carrée de 17 avec seulement 2 chiffres
+# après la virgule, en une seule ligne.
 # À COMPLÉTER
 
 
 # --- Exercice 2 : objets ---------------------------------------------
-# Créer un objet effectif qui vaut 120, puis l'afficher.
-# L'affectation s'écrit <-
+# Exemple du cours : exécutez-le.
+# <- range une valeur dans un objet. Le signe = fonctionne aussi, mais
+# on le réserve aux arguments des fonctions : round(pi, digits = 2).
 effectif <- 120
-effectif
+nb_classes <- 5
+effectif_classe <- effectif / nb_classes
+effectif_classe
 
-# Créer un objet nb_classes qui vaut 5, puis calculer l'effectif moyen
-# par classe dans un nouvel objet effectif_classe.
+# À vous : le collège accueille 30 élèves de plus.
+# Mettre à jour effectif, puis afficher effectif_classe. A-t-il changé ?
+# Pourquoi ? Que faut-il faire pour obtenir le bon résultat ?
 # À COMPLÉTER
 
 # Piège : R distingue les majuscules et les minuscules.
-# Dans la console, taper Effectif renvoie une erreur « objet introuvable ».
 exists("effectif")
 exists("Effectif")
 
-# Lister tous les objets en mémoire (voir aussi le panneau Environnement).
-# Fonction : ls()
+# À vous : créer un objet Effectif (majuscule) qui vaut 0.
+# effectif a-t-il changé ? Combien d'objets y a-t-il en mémoire ?
+# Fonction : ls(), et regardez le panneau Environnement.
 # À COMPLÉTER
 
 
@@ -50,6 +66,9 @@ exists("Effectif")
 # À COMPLÉTER
 
 # Quels collèges ont un IPS supérieur à 100 ?
+# À COMPLÉTER
+
+# Combien sont-ils ? Indice : sum() compte les TRUE.
 # À COMPLÉTER
 
 # Extraire le 2e élément, puis les IPS supérieurs à 100.
@@ -71,53 +90,79 @@ ips_manquant <- c(98.8, 111.8, NA, 103.6, 88.7)
 # À COMPLÉTER
 
 
-# --- Exercice 4 : matrices -------------------------------------------
-# Nombre de mentions (AB, B, TB) pour 3 collèges, rangé dans une matrice.
-mentions <- matrix(c(38, 34, 45,
+# --- Exercice 4 : listes ---------------------------------------------
+# Exemple du cours : exécutez-le.
+# Une liste regroupe des objets de types différents : ici, la fiche d'un
+# collège, avec ses mentions au brevet (AB = assez bien, B = bien, TB = très bien).
+college <- list(nom = "COLLEGE SAINT EXUPERY",
+                ips = 98.8,
+                mentions = c(AB = 45, B = 42, TB = 37))
+college$nom
+college[["ips"]]
+str(college)
+
+# À vous : afficher les mentions du collège, puis leur nombre total.
+# À COMPLÉTER
+
+# À vous : afficher seulement le nombre de mentions TB.
+# Indice : un vecteur dont les éléments ont un nom s'extrait aussi par ce nom.
+# À COMPLÉTER
+
+
+# --- Exercice 5 : matrices -------------------------------------------
+# Exemple du cours : exécutez-le.
+# Les mentions (AB, B, TB) de 3 collèges, rangées dans une matrice :
+# une ligne par collège, une colonne par mention.
+# college_A est le collège Saint-Exupéry de l'exercice 4.
+mentions <- matrix(c(45, 42, 37,
                      20, 25, 11,
                      30, 41, 52),
                    nrow = 3, byrow = TRUE)
-
-# Donner des noms aux lignes et aux colonnes.
 rownames(mentions) <- c("college_A", "college_B", "college_C")
 colnames(mentions) <- c("AB", "B", "TB")
 mentions
+mentions["college_B", ]
+rowSums(mentions)
 
-# Afficher les dimensions (dim), puis la ligne du collège B.
+# À vous : afficher les dimensions de la matrice (dim).
 # À COMPLÉTER
 
-# Total des mentions par collège (rowSums) et par type de mention (colSums).
+# À vous : afficher la colonne des mentions TB, puis le nombre de
+# mentions TB du collège C seulement.
+# Indice : [ligne, colonne] ; une place laissée vide veut dire « tout ».
 # À COMPLÉTER
 
+# À vous : total des mentions par type de mention (par colonne).
+# À COMPLÉTER
 
-# --- Exercice 5 : listes ---------------------------------------------
-# Une liste regroupe des objets de types différents.
-college <- list(nom = "COLLEGE SAINT EXUPERY",
-                ips = 98.8,
-                mentions = c(AB = 38, B = 34, TB = 45))
-
-# Afficher le nom (avec $), puis l'IPS (avec [[ ]]), puis la structure (str).
+# À vous : part des mentions TB dans chaque collège, en %, arrondie à 1 décimale.
 # À COMPLÉTER
 
 
 # --- Exercice 6 : data frames ----------------------------------------
+# Exemple du cours : exécutez-le (il utilise ips_exemple et secteurs
+# de l'exercice 3).
 # Un data frame est un tableau : une ligne par collège, une colonne par variable.
-# Créer petit_tableau avec trois colonnes :
-#   nom = "A", "B", "C", "D", "E" ; ips = ips_exemple ; secteur = secteurs
-# Fonction : data.frame()
-# À COMPLÉTER
+petit_tableau <- data.frame(nom = c("A", "B", "C", "D", "E"),
+                            ips = ips_exemple,
+                            secteur = secteurs)
+petit_tableau$ips
+petit_tableau[petit_tableau$ips > 100, ]
+petit_tableau$favorise <- petit_tableau$ips > 100
+petit_tableau
 
-# Nombre de lignes, de colonnes, noms des colonnes.
+# À vous : nombre de lignes, de colonnes, noms des colonnes.
 # Fonctions : nrow(), ncol(), names()
 # À COMPLÉTER
 
-# Extraire la colonne ips avec $.
+# À vous : garder les collèges du public, avec les colonnes nom et ips seulement.
+# Indice : pour l'égalité, on écrit == ; plusieurs colonnes : c("nom", "ips")
 # À COMPLÉTER
 
-# Garder les lignes dont l'IPS dépasse 100 (syntaxe [lignes, colonnes]).
+# À vous : ajouter une colonne ecart qui donne l'écart de l'IPS à 100.
 # À COMPLÉTER
 
-# Ajouter une colonne favorise qui vaut TRUE si l'IPS dépasse 100.
+# À vous : IPS moyen des collèges du public.
 # À COMPLÉTER
 
 
@@ -138,7 +183,10 @@ college <- list(nom = "COLLEGE SAINT EXUPERY",
 # Nombre de collèges par secteur (table).
 # À COMPLÉTER
 
-# IPS moyen des collèges publics.
+# IPS moyen des collèges publics (même écriture qu'à l'exercice 6).
+# À COMPLÉTER
+
+# Combien de collèges ont un IPS inférieur à 80 ?
 # À COMPLÉTER
 
 # Piège de la casse : combien de collèges ont le secteur "Public" ?

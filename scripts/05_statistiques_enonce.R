@@ -6,6 +6,9 @@
 # ses résultats au brevet ?
 # Outils : corrélation (cor), régression linéaire (lm),
 #          analyse en composantes principales (prcomp).
+#
+# Chaque exercice commence par l'exemple vu en cours : exécutez-le,
+# puis adaptez-le pour répondre aux questions « À vous ».
 # ---------------------------------------------------------------------
 
 library(dplyr)
@@ -26,66 +29,89 @@ nrow(colleges)
 # =====================================================================
 
 # --- Exercice 1 : corrélations ---------------------------------------
-# Corrélation entre l'IPS et la part de mentions très bien (part_tb),
-# puis entre l'IPS et le taux de réussite. Fonction : cor()
+# Exemple du cours : exécutez-le.
+# Corrélation entre l'IPS et la part de mentions très bien.
+cor(colleges$ips, colleges$part_tb)
+
+# À vous : corrélation entre l'IPS et le taux de réussite.
+# Le lien est-il plus fort ou plus faible ?
 # À COMPLÉTER
 
-# Matrice des corrélations entre ips, taux_reussite, part_ab, part_b
-# et part_tb, arrondie à 2 décimales.
+# À vous : matrice des corrélations entre ips, taux_reussite, part_ab,
+# part_b et part_tb, arrondie à 2 décimales.
 # Indice : select() les colonnes dans un objet variables, puis round(cor(variables), 2)
+# Quelle mention est la plus liée à l'IPS ? Laquelle varie en sens inverse ?
 # À COMPLÉTER
 
 
 # --- Exercice 2 : une régression linéaire simple ---------------------
+# Exemple du cours : exécutez-le.
 # Expliquer la part de mentions TB par l'IPS.
 # La formule se lit : part_tb « en fonction de » ips.
-# Créer l'objet modele avec lm(part_tb ~ ips, data = colleges), puis l'afficher.
+modele <- lm(part_tb ~ ips, data = colleges)
+summary(modele)
+coef(modele)
+summary(modele)$r.squared
+
+# À vous (en commentaire) : la constante a-t-elle un sens concret ?
 # À COMPLÉTER
 
-# Afficher le résumé complet avec summary().
+# À vous : la même régression pour le taux de réussite, dans un objet
+# modele_reussite. Afficher son résumé, ses coefficients et son R².
 # À COMPLÉTER
 
-# Extraire les coefficients (coef) et le R² (summary(modele)$r.squared).
-# À COMPLÉTER
-
-# INTERPRÉTATION (en commentaire, en binôme)
-# - Que signifie la pente ? Traduire pour une hausse de 10 points d'IPS.
-# - La constante a-t-elle un sens concret ?
-# - Le lien est-il significatif ?
-# - Quelle part des écarts entre collèges l'IPS explique-t-il ?
+# À vous (en commentaire) : traduire la pente pour une hausse de 10 points
+# d'IPS. Le lien est-il significatif ?
 # À COMPLÉTER
 
 
 # --- Exercice 3 : visualiser la droite -------------------------------
-# Tracer le nuage part_tb en fonction de ips avec plot(),
-# puis ajouter la droite avec abline(modele, col = "red", lwd = 2).
+# Exemple du cours : exécutez-le.
+plot(colleges$ips, colleges$part_tb,
+     main = "Régression de la part de mentions TB sur l'IPS",
+     xlab = "IPS", ylab = "Part de mentions TB (%)")
+abline(modele, col = "red", lwd = 2)
+
+# À vous : même graphique pour le taux de réussite et modele_reussite.
 # À COMPLÉTER
 
 
 # --- Exercice 4 : prédire --------------------------------------------
+# Exemple du cours : exécutez-le.
 # Part de mentions TB attendue pour des collèges d'IPS 80, 100 et 120.
 nouveaux <- data.frame(ips = c(80, 100, 120))
-# Fonction : predict(modele, newdata = nouveaux)
+predict(modele, newdata = nouveaux)
+
+# À vous : taux de réussite attendu pour les mêmes IPS, avec modele_reussite.
+# À COMPLÉTER
+
+# À vous : un collège d'IPS 90 a 95 % de réussite. Fait-il mieux ou moins
+# bien que ce que son IPS laisse prévoir ? De combien de points ?
 # À COMPLÉTER
 
 
 # --- Exercice 5 : les résidus ----------------------------------------
+# Exemple du cours : exécutez-le.
 # Le résidu est l'écart entre la valeur observée et la valeur prédite.
 # Un résidu positif : le collège fait mieux que ce que son IPS laisse prévoir.
-# Ajouter une colonne residu à colleges avec residuals(modele).
+colleges$residu <- residuals(modele)
+
+# À vous : histogramme des résidus, avec des titres.
 # À COMPLÉTER
 
-# Histogramme des résidus.
-# À COMPLÉTER
-
-# Les 10 collèges qui dépassent le plus la prédiction
+# À vous : les 10 collèges qui dépassent le plus la prédiction
 # (nom, académie, ips, part_tb, residu).
 # À COMPLÉTER
 
+# À vous : les 5 collèges les plus en dessous de la prédiction.
+# Leurs chiffres vous paraissent-ils plausibles ?
+# À COMPLÉTER
 
-# --- Exercice 6 : comparer avec le taux de réussite ------------------
-# Même régression avec le taux de réussite, dans modele_reussite.
-# Afficher son R². Est-il meilleur ? Pourquoi, selon vous ?
+
+# --- Exercice 6 : comparer les deux modèles --------------------------
+# À vous : afficher côte à côte les R² des deux modèles.
+# Pourquoi l'IPS explique-t-il moins bien le taux de réussite ?
+# Indice : repensez à l'histogramme du taux de réussite (module 4).
 # À COMPLÉTER
 
 
@@ -94,33 +120,42 @@ nouveaux <- data.frame(ips = c(80, 100, 120))
 # =====================================================================
 
 # --- Exercice 7 : préparer et lancer l'ACP ---------------------------
+# Exemple du cours : exécutez-le.
 # Variables numériques décrivant chaque collège.
 donnees_acp <- colleges |>
   select(ips, ecart_type_de_l_ips, presents,
          taux_reussite, part_ab, part_b, part_tb)
 
-# Lancer l'ACP dans un objet acp avec prcomp(), en centrant et réduisant
-# (scale. = TRUE), car les variables n'ont pas les mêmes unités.
+# scale. = TRUE : on centre et on réduit, car les variables
+# n'ont pas les mêmes unités (IPS, effectifs, pourcentages).
+acp <- prcomp(donnees_acp, scale. = TRUE)
+
+# À vous : relancer l'ACP SANS scale. = TRUE, dans un objet acp_brute,
+# puis afficher les coordonnées des variables sur l'axe 1, arrondies.
+# Indice : round(acp_brute$rotation[, 1], 2)
+# Quelle variable écrase toutes les autres ? Pourquoi ?
 # À COMPLÉTER
 
 
 # --- Exercice 8 : combien d'axes retenir ? ---------------------------
-# Part de variance expliquée par chaque composante : summary(acp).
-# À COMPLÉTER
+# Exemple du cours : exécutez-le.
+# Part de variance expliquée par chaque composante.
+summary(acp)
 
-# Éboulis des valeurs propres : plot(acp, type = "l").
+# À vous : tracer l'éboulis des valeurs propres avec plot(acp, type = "l").
+# Combien d'axes retenir ?
 # À COMPLÉTER
 
 
 # --- Exercice 9 : interpréter les axes -------------------------------
+# Exemple du cours : exécutez-le.
 # Coordonnées des variables sur les deux premiers axes.
-# Indice : round(acp$rotation[, 1:2], 2)
-# À COMPLÉTER
+round(acp$rotation[, 1:2], 2)
 
 # Biplot : variables (flèches) et collèges (points) sur le plan 1-2.
 biplot(acp, xlabs = rep(".", nrow(donnees_acp)), cex = 0.7)
 
-# INTERPRÉTATION (en commentaire, en binôme)
+# À vous (en commentaire, en binôme) :
 # - Quelle part de l'information les deux premiers axes résument-ils ?
 # - Quelles variables contribuent à l'axe 1 ? Comment le nommer ?
 # - Que semble opposer l'axe 2 ?
@@ -131,8 +166,9 @@ biplot(acp, xlabs = rep(".", nrow(donnees_acp)), cex = 0.7)
 # Pour aller plus loin
 # =====================================================================
 
-# Ajouter le secteur dans la régression : lm(part_tb ~ ips + secteur, ...).
-# À IPS égal, le secteur change-t-il la part de mentions TB ?
+# Ajouter le secteur dans la régression : à IPS égal,
+# le secteur change-t-il la part de mentions TB ?
+# Indice : lm(part_tb ~ ips + secteur, data = colleges)
 # À COMPLÉTER
 
 # Diagnostic : résidus en fonction des valeurs prédites.

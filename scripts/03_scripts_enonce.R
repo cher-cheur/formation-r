@@ -5,6 +5,9 @@
 # Question métier : le profil social d'un collège explique-t-il
 # ses résultats au brevet ?
 # Données : IPS des collèges (2020-2021) et résultats au DNB (session 2021).
+#
+# Chaque exercice commence par l'exemple vu en cours : exécutez-le,
+# puis adaptez-le pour répondre aux questions « À vous ».
 # ---------------------------------------------------------------------
 
 library(dplyr)
@@ -18,38 +21,65 @@ ips <- read_csv2("data/ips_colleges_2020_2021.csv")
 # =====================================================================
 
 # --- Exercice 1 : fonctions intégrées --------------------------------
-# Calculer la moyenne, la médiane, le minimum, le maximum
-# et l'écart-type de l'IPS.
-# Fonctions : mean(), median(), min(), max(), sd()
+# Exemple du cours : exécutez-le.
+mean(ips$ips)
+median(ips$ips)
+sd(ips$ips)
+round(mean(ips$ips), 1)
+length(unique(ips$academie))
+
+# À vous : écart d'IPS entre le collège le plus favorisé et le moins
+# favorisé, en une seule ligne.
 # À COMPLÉTER
 
-# Arrondir la moyenne à 1 décimale.
+# À vous : combien de départements différents compte le fichier ?
 # À COMPLÉTER
 
-# Lister les académies sans doublon (unique), puis les compter (length).
+# À vous : IPS médian des collèges publics.
 # À COMPLÉTER
 
-# Passer le secteur en majuscules avec toupper(), puis compter avec table().
-# Utile plus tard : l'autre fichier écrit PUBLIC et PRIVE en majuscules.
+# À vous : passer le secteur en majuscules avec toupper(), puis compter
+# avec table(). Utile plus tard : l'autre fichier écrit PUBLIC et PRIVE
+# en majuscules.
 # À COMPLÉTER
 
 
-# --- Exercice 2 : une boucle sur les académies -----------------------
+# --- Exercice 2 : une boucle ------------------------------------------
+# Exemple du cours : exécutez-le.
 # Pour chaque académie, afficher l'IPS moyen de ses collèges.
 academies <- sort(unique(ips$academie))
 
 for (academie in academies) {
-  # Calculer la moyenne de l'IPS des collèges de cette académie
-  # À COMPLÉTER
+  moyenne <- mean(ips$ips[ips$academie == academie])
   cat(academie, ":", round(moyenne, 1), "\n")
 }
 
+# À vous : même boucle, mais pour chaque académie, afficher son nombre
+# de collèges. Indice : sum() compte les TRUE.
+# À COMPLÉTER
+
+# À vous : une boucle sur les secteurs (et non plus sur les académies),
+# qui affiche l'IPS moyen de chaque secteur.
+# Indice : commencer par secteurs <- unique(ips$secteur)
+# À COMPLÉTER
+
 
 # --- Exercice 3 : une condition dans la boucle -----------------------
-# Même boucle, mais en affichant « au-dessus de la moyenne » ou
-# « en dessous de la moyenne » selon la comparaison avec la moyenne nationale.
+# Exemple du cours : exécutez-le.
+# Indiquer si l'académie est au-dessus ou en dessous de la moyenne nationale.
 moyenne_nationale <- mean(ips$ips)
 
+for (academie in academies) {
+  moyenne <- mean(ips$ips[ips$academie == academie])
+  if (moyenne > moyenne_nationale) {
+    cat(academie, ": au-dessus de la moyenne\n")
+  } else {
+    cat(academie, ": en dessous de la moyenne\n")
+  }
+}
+
+# À vous : n'afficher que les académies dont l'IPS moyen est inférieur
+# à 95, avec leur IPS moyen. Un if peut s'écrire sans else.
 # À COMPLÉTER
 
 
@@ -60,69 +90,94 @@ moyenne_nationale <- mean(ips$ips)
 # Raccourci clavier dans RStudio : Ctrl + Maj + M.
 
 # --- Exercice 4 : filtrer, sélectionner, trier -----------------------
-# Garder les collèges publics de l'académie de Rennes dans rennes_public,
-# puis compter les lignes.
-# Fonction : filter()
+# Exemple du cours : exécutez-le.
+# Les 5 collèges publics les plus favorisés de l'académie de Rennes.
+rennes_public <- ips |>
+  filter(academie == "RENNES", secteur == "public")
+nrow(rennes_public)
+
+rennes_public |>
+  select(nom_de_l_etablissement, nom_de_la_commune, ips) |>
+  arrange(desc(ips)) |>
+  head(5)
+
+# À vous : les 5 collèges publics les MOINS favorisés de l'académie de Lille
+# (nom, commune, IPS). Indice : sans desc(), arrange() trie par ordre croissant.
 # À COMPLÉTER
 
-# Ne garder que le nom, la commune et l'IPS.
-# Fonction : select()
-# À COMPLÉTER
-
-# Trier par IPS décroissant et afficher les 5 premiers.
-# Fonctions : arrange(desc(...)), head()
+# À vous : combien de collèges de l'académie de Créteil ont un IPS
+# inférieur à 80 ?
 # À COMPLÉTER
 
 
 # --- Exercice 5 : importer et préparer les résultats du brevet -------
-# Importer "data/dnb_etablissements_2017_2021.csv" dans un objet dnb.
+dnb <- read_csv2("data/dnb_etablissements_2017_2021.csv")
+
+# À vous : combien de lignes ? Quelles sessions ? Quels types d'établissements ?
 # À COMPLÉTER
 
-# Combien de lignes ? Quelles sessions ? Quels types d'établissements ?
-# À COMPLÉTER
+# Exemple du cours : exécutez-le.
+# Garder la session 2021 et les collèges ayant au moins un présent,
+# puis créer le taux de réussite et la part de mentions TB (en %).
+dnb_2021 <- dnb |>
+  filter(session == 2021, type_d_etablissement == "COLLEGE", presents > 0)
+nrow(dnb_2021)
 
-# Garder la session 2021 et les collèges (type "COLLEGE") ayant au moins
-# un présent, dans un objet dnb_2021. Compter les lignes.
-# À COMPLÉTER
+dnb_2021 <- dnb_2021 |>
+  mutate(taux_reussite = admis / presents * 100,
+         part_tb = admis_mention_tres_bien / presents * 100)
 
-# Créer avec mutate() le taux de réussite et les parts de mentions (en %) :
-#   taux_reussite = admis / presents * 100
-#   part_ab = nombre_d_admis_mention_ab / presents * 100
-#   part_b  = admis_mention_bien / presents * 100
-#   part_tb = admis_mention_tres_bien / presents * 100
-# puis ne garder que : numero_d_etablissement, presents, admis,
-# taux_reussite, part_ab, part_b, part_tb
+# À vous : sur le même modèle, créer part_ab (colonne nombre_d_admis_mention_ab)
+# et part_b (colonne admis_mention_bien), puis ne garder que les colonnes
+# numero_d_etablissement, presents, admis, taux_reussite, part_ab, part_b, part_tb.
 # À COMPLÉTER
 
 
 # --- Exercice 6 : joindre IPS et brevet ------------------------------
+# Exemple du cours : exécutez-le.
 # La clé commune est le code UAI, qui ne porte pas le même nom
-# dans les deux fichiers : uai d'un côté, numero_d_etablissement de l'autre.
-# Joindre ips et dnb_2021 avec left_join() dans un objet colleges.
-# Indice : by = c("uai" = "numero_d_etablissement")
-# À COMPLÉTER
+# dans les deux fichiers.
+colleges <- ips |>
+  left_join(dnb_2021, by = c("uai" = "numero_d_etablissement"))
 
 # Combien de collèges n'ont pas de résultat au brevet ?
-# Indice : is.na() sur la colonne presents
+sum(is.na(colleges$presents))
+
+# À vous : ne garder que les collèges présents dans les deux fichiers,
+# c'est-à-dire ceux dont presents n'est PAS manquant. Compter les lignes.
+# Indice : ! veut dire « non » : !is.na(presents)
 # À COMPLÉTER
 
-# Ne garder que les collèges présents dans les deux fichiers.
+# À vous : IPS, taux de réussite et part de mentions TB du collège
+# Saint-Exupéry de Valserhône (UAI "0010008D").
 # À COMPLÉTER
 
 
 # --- Exercice 7 : synthèses par académie et par secteur --------------
-# Par académie : nombre de collèges (n()), IPS moyen, taux de réussite moyen,
-# triés par IPS moyen décroissant. Ranger le résultat dans par_academie.
-# Fonctions : group_by(), summarise(), arrange()
+# Exemple du cours : exécutez-le.
+# Par secteur : nombre de collèges, IPS moyen, taux de réussite moyen,
+# part moyenne de mentions TB.
+par_secteur <- colleges |>
+  group_by(secteur) |>
+  summarise(nb_colleges = n(),
+            ips_moyen = mean(ips),
+            taux_moyen = mean(taux_reussite),
+            part_tb_moyenne = mean(part_tb))
+par_secteur
+
+# À vous : la même synthèse par académie (nombre de collèges, IPS moyen,
+# taux de réussite moyen), triée par IPS moyen décroissant.
 # À COMPLÉTER
 
-# Par secteur : mêmes indicateurs, plus la part moyenne de mentions TB.
+# À vous : quelle académie a le taux de réussite moyen le plus élevé ?
 # À COMPLÉTER
 
 
 # --- Exercice 8 : enregistrer le résultat ----------------------------
-# Enregistrer colleges dans "data/colleges_ips_dnb_2021.csv" avec write_csv2().
-# Ce fichier servira de point de départ pour le jour 2.
+# À vous : vérifier d'abord que colleges compte bien 6935 lignes (sinon,
+# reprendre l'exercice 6), puis l'enregistrer dans
+# "data/colleges_ips_dnb_2021.csv" avec write_csv2().
+# Ce fichier servira de point de départ au jour 2.
 # À COMPLÉTER
 
 
@@ -135,6 +190,7 @@ moyenne_nationale <- mean(ips$ips)
 # À COMPLÉTER
 
 # Synthèse croisée académie x secteur : nombre de collèges et IPS moyen.
+# Indice : group_by(academie, secteur)
 # À COMPLÉTER
 
 # Écrire sa propre fonction ecart_moyenne(x) qui renvoie x - mean(x),

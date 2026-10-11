@@ -16,7 +16,12 @@
 
 # --- Exercice 1 : R comme calculatrice -------------------------------
 # Taper ces calculs dans la console, puis les exécuter depuis le script :
-# 2 plus 3, 10 divisé par 4, 2 puissance 10 (symbole ^).
+# 2 plus 3, 10 divisé par 4, 2 puissance 10.
+# La puissance s'écrit ** (le symbole ^ fonctionne aussi, mais il est
+# difficile à taper sur certains claviers).
+# À COMPLÉTER
+
+# Combien de minutes dure la formation (2 jours de 6 heures) ?
 # À COMPLÉTER
 
 
@@ -51,7 +56,12 @@
 # ?mean
 # help(round)
 
-# D'après l'aide de round(), arrondir 3.14159 à 2 décimales.
+# Exemple du cours : arrondir à 2 décimales.
+round(3.14159, digits = 2)
+
+# Lire la section Details de l'aide de round() : que se passe-t-il
+# si digits est négatif ? Arrondir 6953 (le nombre de collèges du
+# fichier) à la centaine.
 # À COMPLÉTER
 
 
